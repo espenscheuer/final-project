@@ -62,7 +62,7 @@ server <- function(input, output) {
     
     g <- reactive({
       g <- ggplot(data = plot.data()) +
-        geom_line(mapping = aes(x = Year, y = GDP, group = 1)) +
+        geom_line(mapping = aes(x = Year, y = GDP, group = 1, fill = Name), size = 1.5) +
         theme_stata()  
       if(input$Scale) {
         g <- g + scale_y_continuous(limits = c(0, 7.904521e+13))
