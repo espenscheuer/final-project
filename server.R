@@ -73,6 +73,9 @@ server <- function(input, output) {
     output$Lines <- renderPlot(
       g()
     )
+    # Code for making the second tab 
+    
+    # Code for making the third tab
     
   })
 }
