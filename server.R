@@ -67,7 +67,7 @@ server <- function(input, output) {
       if(input$Scale) {
         g <- g + scale_y_continuous(limits = c(0, 7.904521e+13))
       }
-      return(g)
+      return(g+ geom_smooth(aes(x = Year, y = GDP), method= "lm", formula = y ~ x))
     })
     
     output$Lines <- renderPlot(
