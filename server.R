@@ -6,7 +6,7 @@ library(maps)
 library(dplyr)
 library(rsconnect)
 library(mapdata)
-library(rcolorbrewer)
+library(RColorBrewer)
 
 source("spatial_utils.R")
 source("FinalProjectData.R")
@@ -84,23 +84,23 @@ server <- function(input, output) {
     
     # Code for making the second tab 
     
-    cut.groups <- reactive({
-      amount <- input$dday
-      year <- paste0("X", input$year)
-      if (amount == "1.09") {
-        dday.data.file <- one.world.merge
-      } else if (amount == "3.20") {
-        dday.data.file <- three.world.merge
-      } else {
-        dday.data.file <- five.world.merge
-      }
-      dday.data <- dday.data.file %>%
-        select(c("lat", "long", "group", "region","Name", "Code", "Year", "dollars.day")) %>% 
-        filter("Year" == year) %>% 
+   # cut.groups <- reactive({
+   #   amount <- input$dday
+   #   year <- paste0("X", input$year)
+   #   if (amount == "1.09") {
+  #      dday.data.file <- one.world.merge
+   #   } else if (amount == "3.20") {
+    #    dday.data.file <- three.world.merge
+   #   } else {
+    #    dday.data.file <- five.world.merge
+    #  }
+   #   dday.data <- dday.data.file %>%
+    #    select(c("lat", "long", "group", "region","Name", "Code", "Year", "dollars.day")) %>% 
+   #     filter("Year" == year) %>% 
         #na.exclude(data.file) 
-        dday.data.file$dollars.day <- cut(data$dollars.day, breaks = c(0, 3, 5, 10, 20, 50))
-      return(data)
-    })
+   #     dday.data.file$dollars.day <- cut(data$dollars.day, breaks = c(0, 3, 5, 10, 20, 50))
+    #  return(data)
+  #  })
     
     #output$PovMap <- renderPlot({
     #  ggplot() +
@@ -112,11 +112,11 @@ server <- function(input, output) {
       #
    # })
 
-    output$PovMap <- renderPlot(
-      ggplot(data = map) +
-        geom_map(map=map, aes(map_id=region, x = long, y = lat, fill = "white"),
-                 color = "black") 
-    )
+ #   output$PovMap <- renderPlot(
+  #    ggplot(data = map) +
+ #       geom_map(map=map, aes(map_id=region, x = long, y = lat, fill = "white"),
+   #              color = "black") 
+ #   )
 
 }
 
