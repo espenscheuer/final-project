@@ -25,7 +25,7 @@ one.dday.long <- melt(one.dday, id.vars = c("Country_Name", "Country_Code"))
 colnames(one.dday.long) <- c("Name", "Code", "Year", "dollars.day") 
 
 # Translates iso3 into country codes
-country.code <- iso.alpha(world.data$region, n = 3)
+country.code <- iso.alpha(map$region, n = 3)
 
 # Merges the map and emission data for access
 one.world.merge <- map %>%
@@ -41,7 +41,7 @@ three.dday.long <- melt(three.dday, id.vars = c("Country_Name", "Country_Code"))
 colnames(three.dday.long) <- c("Name", "Code", "Year", "dollars.day") 
 
 # Translates iso3 into country codes
-country.code <- iso.alpha(world.data$region, n = 3)
+country.code <- iso.alpha(map$region, n = 3)
 
 # Merges the map and emission data for access
 three.world.merge <- map %>%
@@ -58,7 +58,7 @@ five.dday.long <- melt(five.dday, id.vars = c("Country_Name", "Country_Code"))
 colnames(five.dday.long) <- c("Name", "Code", "Year", "dollars.day") 
 
 # Translates iso3 into country codes
-country.code <- iso.alpha(world.data$region, n = 3)
+country.code <- iso.alpha(map$region, n = 3)
 
 # Merges the map and emission data for access
 five.world.merge <- map %>%
