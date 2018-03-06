@@ -2,7 +2,8 @@ library(shiny)
 library(ggplot2)
 library(ggthemes) 
 library(tidyr)
-
+library(rlang)
+library(dplyr)
 source("spatial_utils.R")
 source("FinalProjectData.R")
 
@@ -12,7 +13,8 @@ server <- function(input, output) {
   # Code for making the first tab
   output$Map <- renderPlot(
     ggplot(data = map) +
-      geom_map(map=map, aes(map_id=region, x = long, y = lat), fill = "white", color = "black") 
+      geom_map(map=map, aes(map_id=region, x = long, y = lat), fill = "white", color = "black") + 
+      theme_stata() 
   )
   
   # Observes clicks and displays the country name longitude and latitude
@@ -50,6 +52,9 @@ server <- function(input, output) {
       if(name == "Democratic Republic of the Congo") {
         name = "Congo, Dem. Rep."
       }
+      if(name == "Iran") {
+        name = "Iran, Islamic Rep."
+      }
       if(!input$World) {
         data <- filter(data, Name == name | Code == name)
       } else {
@@ -57,6 +62,41 @@ server <- function(input, output) {
       }
       data$Year <- c(1961 : 2019)
       data$GDP <- as.numeric(data$GDP)
+      return(data)
+    })
+    
+    ind_data <- reactive({
+      word <- input$Indicator
+      data <- read.csv(paste0("data/indicators/", word, ".csv"), stringsAsFactors = FALSE, skip = 4)
+      data <- data[ , -3]
+      data <- data[ , -3]
+      data <- melt(data, id.vars = c("Country.Name", "Country.Code"))
+      colnames(data) <- c("Name", "Code", "Year", word)
+      if(name == "Russia") {
+        name = "Russian Federation"
+      }
+      if(name == "Egypt") {
+        name = "Egypt, Arab Rep."
+      }
+      if(name == "Venezuela") {
+        name = "Venezuela, RB"
+      }
+      if(name == "Republic of Congo") {
+        name = "Congo, Rep."
+      }
+      if(name == "Democratic Republic of the Congo") {
+        name = "Congo, Dem. Rep."
+      }
+      if(name == "Iran") {
+        name = "Iran, Islamic Rep."
+      }
+      if(!input$World) {
+        data <- filter(data, Name == name | Code == name)
+      } else {
+        data <- filter(data, Name == "World")
+      }
+      data$Year <- c(1961 : 2019)
+      data[, 4] <- as.numeric(data[, 4])
       return(data)
     })
     
@@ -70,12 +110,21 @@ server <- function(input, output) {
       return(g+ geom_smooth(aes(x = Year, y = GDP), method= "lm", formula = y ~ x))
     })
     
-    output$Lines <- renderPlot(
+    output$ind <- renderText(input$Indicator)
+    
+    output$Lines <- renderPlot({
       g()
-    )
+    })
+    
+    output$Ind_Line <- renderPlot({
+      ggplot(data = ind_data()) +
+        geom_line(mapping = aes(x = Year, y = ind_data()[, 4], group = 1), size = 1.5) +
+        theme_stata() + geom_smooth(aes(x = Year, y = ind_data()[, 4]), method= "lm", formula = y ~ x, color = "red") +
+        ylab(colnames(ind_data()[4]))
+    })
+    
     # Code for making the second tab 
     
-    # Code for making the third tab
     
   })
 }
