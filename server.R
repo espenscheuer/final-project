@@ -113,7 +113,84 @@ server <- function(input, output) {
         #scale_fill_brewer(palette = "Greens")
       
     })
-
+    
+    get.country.name <- reactive({
+      if (amount == "1.09") {
+        dday.data.file <- one.world.merge
+      } else if (amount == "3.20") {
+        dday.data.file <- three.world.merge
+      } else {
+        dday.data.file <- five.world.merge
+      }
+      dday.data <- dday.data.file %>%
+        filter(Year == year)
+      
+      
+    })
+   # observeEvent(input$plot_click, {
+     output$selected <- renderText({ 
+       amount <- input$dday
+       year <- paste0("X", input$year)
+       if (amount == "1.09") {
+         dday.data.file <- one.world.merge
+       } else if (amount == "3.20") {
+         dday.data.file <- three.world.merge
+       } else {
+         dday.data.file <- five.world.merge
+       }
+       dday.data <- dday.data.file %>%
+         filter(Year == year)
+      # Use `nearPoints()` to get selected rows in the `mpg` data set near to the 
+      # click location
+      selected <- nearPoints(dday.data, input$plot_click)
+      
+      # Store `unique()` values from the `class` feature of the selected rows in 
+      # the `selected.class` reactiveValue
+      #dday.data$selected.class <- unique(selected$class)
+      country.name <- unique(selected$Name)
+      country.percentage <- unique(selected$dollars.day)
+      
+   # })
+     })
+     
+     output$CountryName <- renderText(text())
+     
+     plot.data <- reactive({
+       amount <- input$dday
+       year <- paste0("X", input$year)
+       if (amount == "1.09") {
+         dday.data.file <- one.world.merge
+       } else if (amount == "3.20") {
+         dday.data.file <- three.world.merge
+       } else {
+         dday.data.file <- five.world.merge
+       }
+       data <- dday.data.file %>%
+         filter(Year == year)
+       if(name == "Russia") {
+         name = "Russian Federation"
+       }
+       if(name == "Egypt") {
+         name = "Egypt, Arab Rep."
+       }
+       if(name == "Venezuela") {
+         name = "Venezuela, RB"
+       }
+       if(name == "Republic of Congo") {
+         name = "Congo, Rep."
+       }
+       if(name == "Democratic Republic of the Congo") {
+         name = "Congo, Dem. Rep."
+       }
+       if(!input$World) {
+         data <- filter(data, Name == name | Code == name)
+       } else {
+         data <- filter(data, Name == "World")
+       }
+       data$Year <- c(1961 : 2019)
+       data$GDP <- as.numeric(data$GDP)
+       return(data)
+     })
 }
 
 shinyServer(server)  # create the server

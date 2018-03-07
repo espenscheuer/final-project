@@ -44,7 +44,10 @@ ui <- fluidPage(
           ),
           mainPanel(br(), p("This map shows the percentage of people in that country
                      who live on the selected amount per day in the selected
-                     year."), plotOutput('PovMap', click = 'map_click')
+                     year."), plotOutput('PovMap', click = 'map_click'),
+                   #p("Highlighting:",  strong(textOutput('selected', inline=TRUE)) )
+                   #verbatimTextOutput("selected")
+                   textOutput('CountryName')
           )
         )         
       )
