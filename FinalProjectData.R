@@ -23,7 +23,6 @@ one.dday <- one.dday[ , -3]
 one.dday <- one.dday[ , -3]
 one.dday.long <- melt(one.dday, id.vars = c("Country_Name", "Country_Code"))
 colnames(one.dday.long) <- c("Name", "Code", "Year", "dollars.day") 
-View(one.dday.long)
 
 # Translates iso3 into country codes
 country.code <- iso.alpha(map$region, n = 3)
@@ -67,5 +66,3 @@ five.world.merge <- map %>%
   left_join(five.dday.long)
 
 
-
-# THIRD TAB DATA
