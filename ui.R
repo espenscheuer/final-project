@@ -16,7 +16,7 @@ ui <- fluidPage(
              # Creates controls allowing user to choose types of info displayed
              checkboxInput('World',label = "World Stats",  value = FALSE),
              checkboxInput('Scale', label = "Scale to World", value = FALSE),
-             selectInput('Indicator', label = "Choose Indicator to Compare",
+             selectInput('Indicator', label = "Choose an Indicator to Compare",
                choices = list("Female Employment (percent)" = "female_employment", "Male Life Expentency (years)" = "life_exp_male",
                  "Miltary Expenditure (% gov expenditure)" = "miltary_expend",
                  "Refugee Population (# of refugees in Other Countries)" = "refugee_pop", "Gender Equality in School (Gender Parity Index)" = "school_enroll")),
