@@ -28,9 +28,9 @@ ui <- fluidPage(
         sidebarLayout(
           sidebarPanel(
             radioButtons("dday", label = "Dollars per day",
-                         c("1.09" = "1.09",
-                           "3.20" = "3.20",
-                           "5.50" = "5.50")),
+                         c("$1.09" = "1.09",
+                           "$3.20" = "3.20",
+                           "$5.50" = "5.50")),
             
             br(),
             
@@ -47,6 +47,7 @@ ui <- fluidPage(
                      year."), plotOutput('PovMap', click = 'map_click'),
                    #p("Highlighting:",  strong(textOutput('selected', inline=TRUE)) )
                    #verbatimTextOutput("selected")
+                   br(),
                    textOutput('CountryName')
           )
         )         

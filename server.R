@@ -153,9 +153,8 @@ server <- function(input, output) {
    # })
      })
      
-     output$CountryName <- renderText(text())
-     
-     plot.data <- reactive({
+     observeEvent(input$map_click, {
+       name <- GetCountryAtPoint(input$map_click$x, input$map_click$y)
        amount <- input$dday
        year <- paste0("X", input$year)
        if (amount == "1.09") {
@@ -165,31 +164,13 @@ server <- function(input, output) {
        } else {
          dday.data.file <- five.world.merge
        }
-       data <- dday.data.file %>%
-         filter(Year == year)
-       if(name == "Russia") {
-         name = "Russian Federation"
-       }
-       if(name == "Egypt") {
-         name = "Egypt, Arab Rep."
-       }
-       if(name == "Venezuela") {
-         name = "Venezuela, RB"
-       }
-       if(name == "Republic of Congo") {
-         name = "Congo, Rep."
-       }
-       if(name == "Democratic Republic of the Congo") {
-         name = "Congo, Dem. Rep."
-       }
-       if(!input$World) {
-         data <- filter(data, Name == name | Code == name)
-       } else {
-         data <- filter(data, Name == "World")
-       }
-       data$Year <- c(1961 : 2019)
-       data$GDP <- as.numeric(data$GDP)
-       return(data)
+       dday.data <- dday.data.file %>%
+         filter(Year == year) %>% 
+         filter(Name == name) %>% 
+         top_n(1)
+       sentence <- paste("In", name, dday.data$dollars.day, "% of the population
+                         live on $", amount, "per day")
+       output$CountryName <- renderText(sentence)
      })
 }
 

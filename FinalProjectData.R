@@ -65,4 +65,3 @@ five.world.merge <- map %>%
   mutate("Code" = country.code) %>%
   left_join(five.dday.long)
 
-
