@@ -185,6 +185,9 @@ server <- function(input, output) {
        if(name == "Democratic Republic of the Congo") {
          name = "Congo, Dem. Rep."
        }
+       if(name == "Iran") {
+         name = "Iran, Islamic Rep."
+       }
        # Determines which data set to use
        if (amount == "1.09") {
          dday.data.file <- one.world.merge
