@@ -84,9 +84,10 @@ server <- function(input, output) {
     
     # Code for making the second tab 
     
-    cut.groups <- reactive({
+    get.groups <- reactive({
       amount <- input$dday
       year <- paste0("X", input$year)
+      # Determines which data set to use
       if (amount == "1.09") {
         dday.data.file <- one.world.merge
       } else if (amount == "3.20") {
@@ -94,13 +95,12 @@ server <- function(input, output) {
       } else {
         dday.data.file <- five.world.merge
       }
+      # Filters by year and Country Name selected by the user
       dday.data <- dday.data.file %>%
-        select(c("lat", "long", "group", "region","Name", "Code", "Year", "dollars.day")) %>% 
+        select(c("lat", "long", "group", "region","Name", "Code", "Year",
+                 "dollars.day")) %>% 
         filter(Year == year) %>% 
         na.exclude(dollars.day) 
-        #data <- cut(dday.data$dollars.day, breaks = c(0, 3, 5, 10, 20, 50), 
-                    #labels = c())
-        #dday.data$dollars.day = as.numeric(dday.data$dollars.day)
       return(dday.data)
     })
     
@@ -108,24 +108,15 @@ server <- function(input, output) {
       ggplot() +
         geom_map(data = map, map=map, aes(map_id=region, x = long, y = lat),
                  color = "black")  +
-        geom_map(data = cut.groups(), map = map, aes(map_id = region, 
-          x = long, y = lat, group = group, fill = dollars.day), color = "black")# + 
-        #scale_fill_brewer(palette = "Greens")
-      
+        geom_map(data = get.groups(), map = map, aes(map_id = region, 
+          x = long, y = lat, group = group, fill = dollars.day),
+          color = "black") 
     })
      
      observeEvent(input$map_click, {
        name <- GetCountryAtPoint(input$map_click$x, input$map_click$y)
        amount <- input$dday
        year <- paste0("X", input$year)
-       # Determines which data set to use
-       if (amount == "1.09") {
-         dday.data.file <- one.world.merge
-       } else if (amount == "3.20") {
-         dday.data.file <- three.world.merge
-       } else {
-         dday.data.file <- five.world.merge
-       }
        # Accounts for name discrepancies 
        if(name == "Russia") {
          name = "Russian Federation"
@@ -142,13 +133,21 @@ server <- function(input, output) {
        if(name == "Democratic Republic of the Congo") {
          name = "Congo, Dem. Rep."
        }
-       # Filters by year and amount selected by the user
+       # Determines which data set to use
+       if (amount == "1.09") {
+         dday.data.file <- one.world.merge
+       } else if (amount == "3.20") {
+         dday.data.file <- three.world.merge
+       } else {
+         dday.data.file <- five.world.merge
+       }
+       # Filters by year and Country Name selected by the user
        dday.data <- dday.data.file %>%
          filter(Year == year) %>% 
          filter(Name == name) %>% 
          summarize(dollars.day = median(dollars.day))
        # Accommodates for lack of data
-       if (dday.data$dollars.day == "NA") {
+       if (is.na(dday.data)) {
          sentence <- paste("Unfortunately, no data has been collected for the 
                             percentage of the population that lives on $", amount,
                            "per day in", name, ".")

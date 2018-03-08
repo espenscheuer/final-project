@@ -32,6 +32,8 @@ one.world.merge <- map %>%
   mutate("Code" = country.code) %>%
   left_join(one.dday.long)
 
+
+
 ## Combines Latitude/Long Data with $3.20/day data
 three.dday <- read.csv("data/pov.dday.3.20.csv", stringsAsFactors = FALSE)
 
@@ -47,6 +49,7 @@ country.code <- iso.alpha(map$region, n = 3)
 three.world.merge <- map %>%
   mutate("Code" = country.code) %>%
   left_join(three.dday.long)
+
 
 
 ## Combines Latitude/Long Data with $5.50/day data
