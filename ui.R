@@ -96,16 +96,22 @@ ui <- fluidPage(
                         '2006', '2005', '2004','2003', '2002', '2001', '2000',
                         '1999', '1998', '1997', '1996', '1995', '1994', '1993',
                         '1992', '1991', '1990', '1989', '1988', '1987', '1986',
-                        '1985', '1984', '1983', '1982', '1981', '1980'))
+                        '1985', '1984', '1983', '1982', '1981', '1980')),
+            
+            br()
 
           ),
           mainPanel(br(), p("This map shows the percentage of people in that country
                      who live on the selected amount per day in the selected
-                     year."), br(), plotOutput('PovMap', click = 'map_click'),
+                     year."), br(), plotOutput('PovMap', click = 'p_map_click'),
                    #p("Highlighting:",  strong(textOutput('selected', inline=TRUE)) )
                    #verbatimTextOutput("selected")
                    br(),
-                   textOutput('CountryName')
+                   textOutput('CountryName'),
+                   br(),
+                   br(),
+                   br()
+                   
           )
         )
       )

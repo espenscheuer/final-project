@@ -38,7 +38,7 @@ server <- function(input, output) {
       }
       return(name)
     })
-  })
+  
   
 
     output$Country <- renderText(text())
@@ -78,8 +78,8 @@ server <- function(input, output) {
       data <- read.csv(paste0("data/indicators/", word, ".csv"), stringsAsFactors = FALSE, skip = 4)
       data <- data[ , -3]
       data <- data[ , -3]
-      data <- melt(data, id.vars = c("Country.Name", "Country.Code"))
-      colnames(data) <- c("Name", "Code", "Year", word)
+      data2 <- melt(data, id.vars = c("Country.Name", "Country.Code"))
+      colnames(data2) <- c("Name", "Code", "Year", word)
       if(name == "Russia") {
         name = "Russian Federation"
       }
@@ -99,13 +99,13 @@ server <- function(input, output) {
         name = "Iran, Islamic Rep."
       }
       if(!input$World) {
-        data <- filter(data, Name == name | Code == name)
+        data2 <- filter(data2, Name == name | Code == name)
       } else {
-        data <- filter(data, Name == "World")
+        data2 <- filter(data2, Name == "World")
       }
-      data$Year <- c(1961 : 2019)
-      data[, 4] <- as.numeric(data[, 4])
-      return(data)
+      data2$Year <- c(1961 : 2019)
+      data2[, 4] <- as.numeric(data2[, 4])
+      return(data2)
     })
 
     g <- reactive({
@@ -128,10 +128,11 @@ server <- function(input, output) {
     output$Ind_Line <- renderPlot({
       ggplot(data = ind_data()) +
         geom_line(mapping = aes(x = Year, y = ind_data()[, 4], group = 1), size = 1.5) +
-        theme_stata() + geom_smooth(aes(x = Year, y = ind_data()[, 4]), method= "lm", formula = y ~ x, color = "red") +
+        theme_stata() + geom_smooth(aes(x = Year, y = ind_data()[, 4]), method= "lm", 
+                                    formula = y ~ x, color = "red") +
         ylab(colnames(ind_data()[4]))
     })
-
+})
   
     # Code for making the second tab
 
@@ -165,7 +166,7 @@ server <- function(input, output) {
           color = "black")
     })
 
-     observeEvent(input$map_click, {
+     observeEvent(input$p_map_click, {
        name <- GetCountryAtPoint(input$map_click$x, input$map_click$y)
        amount <- input$dday
        year <- paste0("X", input$year)

@@ -12,8 +12,10 @@ map <- map_data(map = "world")
 gdp <- read.csv("data/gdp.csv", stringsAsFactors = FALSE, skip = 4)
 gdp <- gdp[ , -3]
 gdp <- gdp[ , -3]
-gdp <- melt(gdp, id.vars = c("Country.Name", "Country.Code"))
-colnames(gdp) <- c("Name", "Code", "Year", "GDP")
+gdp2 <- melt(gdp, id.vars = c("Country.Name", "Country.Code"))
+colnames(gdp2) <- c("Name", "Code", "Year", "GDP")
+
+
 
 ### SECOND TAB DATA ###
 one.dday <- read.csv("data/pov.dday.1.09.csv", stringsAsFactors = FALSE)
@@ -42,9 +44,6 @@ three.dday <- three.dday[ , -3]
 three.dday.long <- melt(three.dday, id.vars = c("Country_Name", "Country_Code"))
 colnames(three.dday.long) <- c("Name", "Code", "Year", "dollars.day")
 
-# Translates iso3 into country codes
-country.code <- iso.alpha(map$region, n = 3)
-
 # Merges the map and emission data for access
 three.world.merge <- map %>%
   mutate("Code" = country.code) %>%
@@ -59,9 +58,6 @@ five.dday <- five.dday[ , -3]
 five.dday <- five.dday[ , -3]
 five.dday.long <- melt(five.dday, id.vars = c("Country_Name", "Country_Code"))
 colnames(five.dday.long) <- c("Name", "Code", "Year", "dollars.day")
-
-# Translates iso3 into country codes
-country.code <- iso.alpha(map$region, n = 3)
 
 # Merges the map and emission data for access
 five.world.merge <- map %>%
