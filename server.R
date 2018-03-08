@@ -1,22 +1,28 @@
 library(shiny)
 library(ggplot2)
-library(ggthemes) 
+library(ggthemes)
 library(tidyr)
-library(rlang)
+
+library(maps)
 library(dplyr)
+library(rsconnect)
+library(mapdata)
+library(RColorBrewer)
+
+
 source("spatial_utils.R")
 source("FinalProjectData.R")
 
 # Define a server function
 server <- function(input, output) {
-  
+
   # Code for making the first tab
   output$Map <- renderPlot(
     ggplot(data = map) +
-      geom_map(map=map, aes(map_id=region, x = long, y = lat), fill = "white", color = "black") + 
-      theme_stata() 
+      geom_map(map=map, aes(map_id=region, x = long, y = lat), fill = "white", color = "black") +
+      theme_stata()
   )
-  
+
   # Observes clicks and displays the country name longitude and latitude
   observeEvent(input$map_click, {
     name <- GetCountryAtPoint(input$map_click$x, input$map_click$y)
@@ -32,9 +38,9 @@ server <- function(input, output) {
       }
       return(name)
     })
-    
+
     output$Country <- renderText(text())
-    
+
     plot.data <- reactive({
       data <- gdp2
       if(name == "Russia") {
@@ -64,7 +70,7 @@ server <- function(input, output) {
       data$GDP <- as.numeric(data$GDP)
       return(data)
     })
-    
+
     ind_data <- reactive({
       word <- input$Indicator
       data <- read.csv(paste0("data/indicators/", word, ".csv"), stringsAsFactors = FALSE, skip = 4)
@@ -99,34 +105,108 @@ server <- function(input, output) {
       data[, 4] <- as.numeric(data[, 4])
       return(data)
     })
-    
+
     g <- reactive({
       g <- ggplot(data = plot.data()) +
         geom_line(mapping = aes(x = Year, y = GDP, group = 1, fill = Name), size = 1.5) +
-        theme_stata()  
+        theme_stata()
       if(input$Scale) {
         g <- g + scale_y_continuous(limits = c(0, 7.904521e+13))
       }
       return(g+ geom_smooth(aes(x = Year, y = GDP), method= "lm", formula = y ~ x))
     })
-    
+
     output$ind <- renderText(input$Indicator)
-    
+
     output$Lines <- renderPlot({
       g()
+
     })
-    
+
     output$Ind_Line <- renderPlot({
       ggplot(data = ind_data()) +
         geom_line(mapping = aes(x = Year, y = ind_data()[, 4], group = 1), size = 1.5) +
         theme_stata() + geom_smooth(aes(x = Year, y = ind_data()[, 4]), method= "lm", formula = y ~ x, color = "red") +
         ylab(colnames(ind_data()[4]))
     })
-    
-    # Code for making the second tab 
-    
-    
-  })
+
+  
+    # Code for making the second tab
+
+    get.groups <- reactive({
+      amount <- input$dday
+      year <- paste0("X", input$year)
+      # Determines which data set to use
+      if (amount == "1.09") {
+        dday.data.file <- one.world.merge
+      } else if (amount == "3.20") {
+        dday.data.file <- three.world.merge
+      } else {
+        dday.data.file <- five.world.merge
+      }
+      # Filters by year and Country Name selected by the user
+      dday.data <- dday.data.file %>%
+        select(c("lat", "long", "group", "region","Name", "Code", "Year",
+                 "dollars.day")) %>%
+        filter(Year == year) %>%
+        na.exclude(dollars.day)
+      return(dday.data)
+    })
+
+
+    output$PovMap <- renderPlot({
+      ggplot() +
+        geom_map(data = map, map=map, aes(map_id=region, x = long, y = lat),
+                 color = "black")  +
+        geom_map(data = get.groups(), map = map, aes(map_id = region,
+          x = long, y = lat, group = group, fill = dollars.day),
+          color = "black")
+    })
+
+     observeEvent(input$map_click, {
+       name <- GetCountryAtPoint(input$map_click$x, input$map_click$y)
+       amount <- input$dday
+       year <- paste0("X", input$year)
+       # Accounts for name discrepancies
+       if(name == "Russia") {
+         name = "Russian Federation"
+       }
+       if(name == "Egypt") {
+         name = "Egypt, Arab Rep."
+       }
+       if(name == "Venezuela") {
+         name = "Venezuela, RB"
+       }
+       if(name == "Republic of Congo") {
+         name = "Congo, Rep."
+       }
+       if(name == "Democratic Republic of the Congo") {
+         name = "Congo, Dem. Rep."
+       }
+       # Determines which data set to use
+       if (amount == "1.09") {
+         dday.data.file <- one.world.merge
+       } else if (amount == "3.20") {
+         dday.data.file <- three.world.merge
+       } else {
+         dday.data.file <- five.world.merge
+       }
+       # Filters by year and Country Name selected by the user
+       dday.data <- dday.data.file %>%
+         filter(Year == year) %>%
+         filter(Name == name) %>%
+         summarize(dollars.day = median(dollars.day))
+       # Accommodates for lack of data
+       if (is.na(dday.data)) {
+         sentence <- paste("Unfortunately, no data has been collected for the
+                            percentage of the population that lives on $", amount,
+                           "per day in", name, ".")
+       } else {
+          sentence <- paste("In", name, dday.data$dollars.day, "% of the population
+                             live on $", amount, "per day")
+       }
+       output$CountryName <- renderText(sentence)
+     })
 }
 
 shinyServer(server)  # create the server
