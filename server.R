@@ -38,6 +38,8 @@ server <- function(input, output) {
       }
       return(name)
     })
+  })
+  
 
     output$Country <- renderText(text())
 
