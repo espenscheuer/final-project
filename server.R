@@ -2,7 +2,6 @@ library(shiny)
 library(ggplot2)
 library(ggthemes)
 library(tidyr)
-
 library(maps)
 library(dplyr)
 library(rsconnect)

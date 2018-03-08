@@ -71,7 +71,10 @@ ui <- fluidPage(
                  "Refugee Population (# of refugees in Other Countries)" = 
                  "refugee_pop", "Gender Equality in School (Gender Parity Index)" = 
                  "school_enroll")),
+             br(),
+             br(),
              textOutput('ind'),
+             br(),
              plotOutput('Ind_Line')
           ),
           mainPanel(
